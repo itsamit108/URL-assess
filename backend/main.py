@@ -1,6 +1,4 @@
 import re
-import ssl
-import urllib.request
 
 import requests
 from bs4 import BeautifulSoup
@@ -66,10 +64,9 @@ def assess_vulnerabilities(url):
 
         # Check for SSL certificate
         try:
-            context = ssl.create_default_context()
-            with urllib.request.urlopen(url, context=context) as response:
-                pass
-        except (ssl.SSLError, urllib.error.URLError):
+            # This will raise an SSLError if the certificate is not valid
+            requests.get(url, verify=True)
+        except requests.exceptions.SSLError:
             vulnerabilities.append("SSL Certificate Issue")
 
         if vulnerabilities:

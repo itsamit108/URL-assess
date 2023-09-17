@@ -6,6 +6,7 @@ function App() {
   const [url, setUrl] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); // State to handle errors
 
   useEffect(() => {
     setResult(null);
@@ -14,6 +15,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null); // Clear any previous errors
 
     try {
       const response = await axios.get('http://localhost:8000/vulnerability', {
@@ -22,6 +24,7 @@ function App() {
       setResult(response.data);
     } catch (error) {
       console.error('Error:', error);
+      setError('An error occurred. Please check the URL and try again.'); // Set error message
     } finally {
       setLoading(false);
     }
@@ -45,6 +48,11 @@ function App() {
       {loading ? (
         <div className="loadingStyle">
           <div className="spinnerStyle"></div>
+        </div>
+      ) : null}
+      {error ? ( // Display error message if error state is set
+        <div className="errorStyle">
+          <p>{error}</p>
         </div>
       ) : null}
       {result && (

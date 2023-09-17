@@ -1,6 +1,7 @@
 .appStyle {
     font-family: 'Roboto, sans-serif';
     text-align: center;
+    margin: 20px;
 }
 
 .formStyle {
@@ -35,6 +36,12 @@
     color: #2196F3;
 }
 
+.errorStyle {
+    font-size: 16px;
+    color: red;
+    margin-top: 10px;
+}
+
 .resultStyle {
     text-align: left;
     max-width: 500px;
@@ -54,4 +61,14 @@
     height: 30px;
     animation: spin 1s linear infinite;
     margin: 0 auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
