@@ -21,10 +21,17 @@ app.add_middleware(
 
 # Define a function to check for common vulnerabilities and security aspects
 def assess_vulnerabilities(url):
+    # Add https:// prefix if no protocol specified
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+
     try:
         # Send a GET request to the provided URL
         response = requests.get(url)
         response.raise_for_status()
+
+        # Get the final URL after redirects
+        final_url = response.url
 
         # Parse the HTML content
         soup = BeautifulSoup(response.text, "html.parser")
@@ -59,7 +66,7 @@ def assess_vulnerabilities(url):
                     vulnerabilities.append(vulnerability)
 
         # Check if the website uses HTTPS
-        if not url.startswith("https://"):
+        if not final_url.startswith("https://"):
             vulnerabilities.append("Not Using HTTPS")
 
         # Check for SSL certificate

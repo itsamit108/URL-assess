@@ -30,6 +30,9 @@ function App() {
     }
   };
 
+  // Disable the button if the URL input is empty
+  const isAssessButtonDisabled = url.trim() === '';
+
   return (
     <div className="appStyle">
       <h1>URL Security Assessment</h1>
@@ -41,7 +44,7 @@ function App() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
         />
-        <button className="buttonStyle" type="submit" disabled={loading}>
+        <button className="buttonStyle" type="submit" disabled={loading || isAssessButtonDisabled}>
           Assess
         </button>
       </form>
