@@ -21,11 +21,25 @@ app.add_middleware(
 
 # Define a function to check for common vulnerabilities and security aspects
 def assess_vulnerabilities(url):
-    # Add https:// prefix if no protocol specified
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url
-
     try:
+        # Check if the URL starts with "https://" or "http://"
+        if not (url.startswith("https://") or url.startswith("http://")):
+            # Prepend "https://" to the URL and send a GET request
+            try:
+                response = requests.get("https://" + url)
+                url = "https://" + url
+            except requests.exceptions.RequestException:
+                # If the request raises an exception, prepend "http://" to the URL and send another GET request
+                try:
+                    response = requests.get("http://" + url)
+                    url = "http://" + url
+                except requests.exceptions.RequestException:
+                    # If both requests raise exceptions, raise an HTTPException
+                    raise HTTPException(
+                        status_code=500,
+                        detail="Error: Unable to connect to the website",
+                    )
+
         # Send a GET request to the provided URL
         response = requests.get(url)
         response.raise_for_status()
@@ -58,6 +72,13 @@ def assess_vulnerabilities(url):
             "Security Misconfiguration": [r"404\s*Not Found", r"403\s*Forbidden"],
             "Broken Authentication": [r"\blogin\b", r"authentication\s*failed"],
             "Insecure Deserialization": [r"phpserialize", r"pickle\.load\("],
+            "Missing Rate Limiting": [r"429\s*Too Many Requests"],
+            "Missing HTTP Security Headers": [
+                r"X-Frame-Options",
+                r"X-XSS-Protection",
+                r"X-Content-Type-Options",
+                r"Content-Security-Policy",
+            ],
         }
 
         for vulnerability, patterns in common_vulnerabilities.items():
